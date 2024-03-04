@@ -19,4 +19,4 @@ Node.js, express, websockets, HTML5 canvas
 
 3. Coordinates of the ball, and other info, are kept in the server and broadcasted to clients.
 
-https://github.com/jbarradas/websockets-bounce/blob/main/public/video.mov
+https://github.com/jbarradas/websockets-bounce/blob/main/public/video.mp4
