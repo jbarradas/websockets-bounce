@@ -1,4 +1,4 @@
-let serverURL = "wss://" + window.location.host;
+let serverURL = "ws://" + window.location.host;
 let socket;
 let c, canvas, ctx;
 
@@ -18,6 +18,10 @@ function openSocket(url) {
 function setup() {
   openSocket(serverURL);
   getCanvas();
+  new ResizeObserver(() => {
+    getCanvas();
+    sendCanvas();
+  }).observe(c);
 }
 
 function setInnerHTML(elementId, innerHTML) {
@@ -41,7 +45,16 @@ function changeConnection(event) {
 }
 
 function openConnection() {
-  // sendMessage("Client here: opening connection");
+  sendCanvas();
+}
+
+function sendCanvas() {
+  sendMessage("client", {
+    canvas: {
+      width: canvas.width,
+      height: canvas.height,
+    },
+  });
 }
 
 function closeConnection() {}
@@ -58,7 +71,11 @@ function readIncomingMessage(event) {
 
   if (data) {
     if (data.action === "coords") draw(data.payload);
-    if (data.action === "client") setInnerHTML("client", data.payload.id);
+    if (data.action === "client")
+      setInnerHTML(
+        "client",
+        `ID: ${data.payload.id} - Is lead: ${data.payload.isLead}`
+      );
   }
 }
 
@@ -66,18 +83,6 @@ function draw(coords, sAngle, eAngle, counterclockwise = false) {
   if (!coords) return null;
 
   setInnerHTML("online", `Users online: ${coords.online}`);
-  if (
-    coords.x + coords.dx > canvas.width - coords.r ||
-    coords.x + coords.dx < coords.r
-  ) {
-    sendMessage("hit_canvas", "x");
-  }
-  if (
-    coords.y + coords.dy > canvas.height - coords.r ||
-    coords.y + coords.dy < coords.r
-  ) {
-    sendMessage("hit_canvas", "y");
-  }
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.beginPath();

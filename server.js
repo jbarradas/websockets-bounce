@@ -15,14 +15,10 @@ const server = createServer(app);
 const wss = new WebSocketServer({ server });
 const clients = [];
 let online = 0;
+let leadClient;
 
 // Live Reload for client /public files
-const liveReloadServer = livereload.createServer({
-  https: {
-    key: fs.readFileSync(path.join(__dirname, "./certs/websockets_bounce.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "./certs/cert.pem")),
-  },
-});
+const liveReloadServer = livereload.createServer();
 liveReloadServer.watch(path.join(__dirname, "public"));
 
 liveReloadServer.server.once("connection", () => {
@@ -49,14 +45,8 @@ function handleClient(thisClient, request) {
   online += 1;
   thisClient.id = request.headers["sec-websocket-key"];
   clients.push(thisClient);
-  thisClient.send(
-    JSON.stringify({
-      action: "client",
-      payload: {
-        id: thisClient.id,
-      },
-    })
-  );
+  if (!leadClient) leadClient = thisClient;
+  sendClient(thisClient);
   if (clients.length === 1) moveBall();
 
   function endClient() {
@@ -66,19 +56,29 @@ function handleClient(thisClient, request) {
     console.log("Connection closed");
     if (clients.length <= 0) {
       clearInterval(moveBallInterval);
-      x = r;
-      y = r;
-      dx = 1;
-      dy = 1;
+      // x = r;
+      // y = r;
+      // dx = 1;
+      // dy = 1;
+      leadClient = null;
+    } else {
+      if (leadClient.id === thisClient.id) {
+        leadClient = clients[0];
+        sendClient(clients[0]);
+      }
     }
   }
 
-  function hitCanvas(axis) {
-    if (axis === "x") {
-      dx = -dx;
-    } else if (axis === "y") {
-      dy = -dy;
-    }
+  function sendClient(client) {
+    client.send(
+      JSON.stringify({
+        action: "client",
+        payload: {
+          id: client.id,
+          isLead: leadClient.id === client.id,
+        },
+      })
+    );
   }
 
   function sendCoordinates() {
@@ -94,12 +94,19 @@ function handleClient(thisClient, request) {
 
   function moveBall() {
     moveBallInterval = setInterval(() => {
-      x += dx;
-      y += dy;
+      if (leadClient?.canvas) {
+        if (x + dx > leadClient.canvas.width - r || x + dx < r) {
+          dx = -dx;
+        }
+        if (y + dy > leadClient.canvas.height - r || y + dy < r) {
+          dy = -dy;
+        }
 
-      // bounce effect on Y axis
+        x += dx;
+        y += dy;
 
-      sendCoordinates();
+        sendCoordinates();
+      }
     }, 10);
     return moveBallInterval;
   }
@@ -111,9 +118,15 @@ function handleClient(thisClient, request) {
     } catch (e) {
       return null;
     }
-    const client = clients[0].id === thisClient.id;
-    if (client && clientData.action === "hit_canvas") {
-      hitCanvas(clientData.payload);
+
+    if (clientData.action === "client") {
+      const clientIndex = clients.findIndex(
+        (client) => client.id === thisClient.id
+      );
+      clients[clientIndex].canvas = clientData.payload.canvas;
+      if (!leadClient || leadClient.id === thisClient.id) {
+        leadClient = clients[clientIndex];
+      }
     }
   }
 
