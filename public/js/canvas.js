@@ -7,7 +7,7 @@ function getCanvas() {
   c = document.getElementById("myCanvas");
   canvas = c.getBoundingClientRect();
   ctx = c.getContext("2d");
-  sizeCanvas();
+  // sizeCanvas();
 }
 
 function openSocket(url) {
@@ -20,15 +20,15 @@ function openSocket(url) {
 function setup() {
   openSocket(serverURL);
   getCanvas();
-  new ResizeObserver(() => {
-    getCanvas();
-    sendCanvas();
-  }).observe(c);
+  // new ResizeObserver(() => {
+  //   getCanvas();
+  //   sendCanvas();
+  // }).observe(c);
 
-  window.addEventListener("resize", () => {
-    sizeCanvas();
-    sendCanvas();
-  });
+  // window.addEventListener("resize", () => {
+  //   sizeCanvas();
+  //   sendCanvas();
+  // });
 }
 
 function setInnerHTML(elementId, innerHTML) {
@@ -51,20 +51,21 @@ function changeConnection(event) {
   }
 }
 
-function sizeCanvas() {
-  const padding = 50;
-  const width =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth;
-  const height =
-    window.innerHeight ||
-    document.documentElement.clientHeight ||
-    document.body.clientHeight;
+// Set responsive canvas size per client
+// function sizeCanvas() {
+//   const padding = 50;
+//   const width =
+//     window.innerWidth ||
+//     document.documentElement.clientWidth ||
+//     document.body.clientWidth;
+//   const height =
+//     window.innerHeight ||
+//     document.documentElement.clientHeight ||
+//     document.body.clientHeight;
 
-  c.width = width - padding;
-  c.height = height - padding;
-}
+//   c.width = width - padding;
+//   c.height = height - padding;
+// }
 
 function openConnection() {
   sendCanvas();
