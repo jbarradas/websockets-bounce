@@ -1,32 +1,32 @@
 const { sendCoordinates } = require("./actions");
 
-const r = 25;
-let x = r;
-let y = r;
-let dx = 1;
-let dy = 1;
 let moveBallInterval;
+const coords = {
+  r: 15,
+  x: 15,
+  y: 15,
+  dx: 1,
+  dy: 1,
+};
 
 function moveBall(clients, leadClient, online) {
   moveBallInterval = setInterval(() => {
     if (leadClient?.canvas) {
+      // Handle collision
+      const { x, dx, r, y, dy } = coords;
       if (x + dx > leadClient.canvas.width - r || x + dx < r) {
-        dx = -dx;
+        coords.dx = -dx;
       }
       if (y + dy > leadClient.canvas.height - r || y + dy < r) {
-        dy = -dy;
+        coords.dy = -dy;
       }
 
-      x += dx;
-      y += dy;
+      coords.x += coords.dx;
+      coords.y += coords.dy;
 
       sendCoordinates(
         {
-          x,
-          y,
-          r,
-          dx,
-          dy,
+          ...coords,
           online,
         },
         clients
@@ -37,11 +37,6 @@ function moveBall(clients, leadClient, online) {
 }
 
 module.exports = {
-  r,
-  x,
-  y,
-  dx,
-  dy,
   moveBallInterval,
   moveBall,
 };
