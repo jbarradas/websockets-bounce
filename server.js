@@ -64,7 +64,13 @@ function handleClient(thisClient, request) {
     const position = clients.indexOf(thisClient);
     clients.splice(position, 1);
     console.log("Connection closed");
-    if (clients.length <= 0) clearInterval(moveBallInterval);
+    if (clients.length <= 0) {
+      clearInterval(moveBallInterval);
+      x = r;
+      y = r;
+      dx = 1;
+      dy = 1;
+    }
   }
 
   function hitCanvas(axis) {
