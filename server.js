@@ -7,7 +7,9 @@ const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
 const app = express();
 
-app.use(connectLivereload());
+if (process.env.NODE_ENV === "development") {
+  app.use(connectLivereload());
+}
 app.use(express.static("public"));
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
