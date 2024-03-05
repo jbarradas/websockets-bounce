@@ -16,12 +16,7 @@ let online = 0;
 let leadClient;
 
 // Live Reload for client /public files
-const liveReloadServer = livereload.createServer({
-  https: {
-    key: fs.readFileSync(path.join(__dirname, "./certs/websockets_bounce.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "./certs/cert.pem")),
-  },
-});
+const liveReloadServer = livereload.createServer();
 liveReloadServer.watch(path.join(__dirname, "public"));
 
 liveReloadServer.server.once("connection", () => {
