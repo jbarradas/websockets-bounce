@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
-const { createServer } = require("https");
+const { createServer } = require("http");
 const { WebSocketServer } = require("ws");
 const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
@@ -9,33 +9,26 @@ const app = express();
 
 app.use(connectLivereload());
 app.use(express.static("public"));
-console.log("env", process.env.NODE_ENV);
-const server = createServer(
-  {
-    key: fs.readFileSync(path.join(__dirname, "./certs/websockets_bounce.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "./certs/cert.pem")),
-  },
-  app
-);
+const server = createServer(app);
 const wss = new WebSocketServer({ server });
 const clients = [];
 let online = 0;
 let leadClient;
 
 // Live Reload for client /public files
-const liveReloadServer = livereload.createServer({
-  https: {
-    key: fs.readFileSync(path.join(__dirname, "./certs/websockets_bounce.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "./certs/cert.pem")),
-  },
-});
-liveReloadServer.watch(path.join(__dirname, "public"));
+// const liveReloadServer = livereload.createServer({
+//   https: {
+//     key: fs.readFileSync(path.join(__dirname, "./certs/websockets_bounce.pem")),
+//     cert: fs.readFileSync(path.join(__dirname, "./certs/cert.pem")),
+//   },
+// });
+// liveReloadServer.watch(path.join(__dirname, "public"));
 
-liveReloadServer.server.once("connection", () => {
-  setTimeout(() => {
-    liveReloadServer.refresh("/");
-  }, 100);
-});
+// liveReloadServer.server.once("connection", () => {
+//   setTimeout(() => {
+//     liveReloadServer.refresh("/");
+//   }, 100);
+// });
 
 function serverStart() {
   const port = wss.address().port;
