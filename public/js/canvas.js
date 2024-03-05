@@ -1,4 +1,4 @@
-let serverURL = "ws://" + window.location.host;
+let serverURL = "wss://" + window.location.host;
 let socket;
 let c, canvas, ctx;
 

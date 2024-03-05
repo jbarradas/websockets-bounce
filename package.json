@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "start": "node server.js",
     "dev": "nodemon server.js --ignore public",
-    "build": "tsc",
+    "build": "",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
