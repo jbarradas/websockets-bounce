@@ -20,8 +20,8 @@ let leadClient;
 // Live Reload for client /public files
 const liveReloadServer = livereload.createServer({
   https: {
-    key: fs.readFileSync("certs/websockets_bouce.pem"),
-    cert: fs.readFileSync("certs/cert.pem"),
+    key: fs.readFileSync(path.join(__dirname, "./certs/websockets_bounce.pem")),
+    cert: fs.readFileSync(path.join(__dirname, "./certs/cert.pem")),
   },
 });
 liveReloadServer.watch(path.join(__dirname, "public"));
