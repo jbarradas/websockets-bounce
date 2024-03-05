@@ -1,5 +1,6 @@
 const protocol = window.location.protocol == "https:" ? "wss" : "ws";
 let serverURL = protocol + window.location.host;
+console.log("serverURL", serverURL);
 let socket;
 let c, canvas, ctx;
 
