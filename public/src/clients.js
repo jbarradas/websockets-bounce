@@ -5,6 +5,10 @@ const clients = [];
 let online = 0;
 let leadClient;
 
+function getOnline() {
+  return online;
+}
+
 function handleMessage(thisClient, data) {
   let clientData;
   try {
@@ -17,7 +21,9 @@ function handleMessage(thisClient, data) {
     const clientIndex = clients.findIndex(
       (client) => client.id === thisClient.id
     );
+    // update client canvas (width + height)
     clients[clientIndex].canvas = clientData.payload.canvas;
+    // update leadClient
     if (!leadClient || leadClient.id === thisClient.id) {
       leadClient = clients[clientIndex];
     }
@@ -30,7 +36,7 @@ function startClient(thisClient, request) {
   clients.push(thisClient);
   if (!leadClient) leadClient = thisClient;
   sendClient(thisClient, leadClient);
-  if (clients.length === 1) moveBall(clients, leadClient, online);
+  if (clients.length === 1) moveBall(clients, leadClient, getOnline);
 }
 
 function endClient(thisClient) {
@@ -38,12 +44,10 @@ function endClient(thisClient) {
   const position = clients.indexOf(thisClient);
   clients.splice(position, 1);
   console.log("Connection closed");
+
   if (clients.length <= 0) {
     clearInterval(moveBallInterval);
-    // x = r;
-    // y = r;
-    // dx = 1;
-    // dy = 1;
+    // resetBall();
     leadClient = null;
   } else {
     if (leadClient.id === thisClient.id) {

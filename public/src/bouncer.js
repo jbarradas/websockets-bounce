@@ -9,7 +9,7 @@ const coords = {
   dy: 1,
 };
 
-function moveBall(clients, leadClient, online) {
+function moveBall(clients, leadClient, getOnline) {
   moveBallInterval = setInterval(() => {
     if (leadClient?.canvas) {
       // Handle collision
@@ -24,6 +24,7 @@ function moveBall(clients, leadClient, online) {
       coords.x += coords.dx;
       coords.y += coords.dy;
 
+      const online = getOnline();
       sendCoordinates(
         {
           ...coords,
@@ -36,7 +37,15 @@ function moveBall(clients, leadClient, online) {
   return moveBallInterval;
 }
 
+function resetBall() {
+  coords.x = coords.r;
+  coords.y = coords.r;
+  coords.dx = 1;
+  coords.dy = 1;
+}
+
 module.exports = {
   moveBallInterval,
   moveBall,
+  resetBall,
 };
