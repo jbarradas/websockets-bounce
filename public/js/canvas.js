@@ -1,4 +1,5 @@
-let serverURL = "ws://" + window.location.host;
+const protocol = window.location.protocol == "https:" ? "wss" : "ws";
+let serverURL = protocol + window.location.host;
 let socket;
 let c, canvas, ctx;
 
