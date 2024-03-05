@@ -7,6 +7,7 @@ function getCanvas() {
   c = document.getElementById("myCanvas");
   canvas = c.getBoundingClientRect();
   ctx = c.getContext("2d");
+  sizeCanvas();
 }
 
 function openSocket(url) {
@@ -23,6 +24,11 @@ function setup() {
     getCanvas();
     sendCanvas();
   }).observe(c);
+
+  window.addEventListener("resize", () => {
+    sizeCanvas();
+    sendCanvas();
+  });
 }
 
 function setInnerHTML(elementId, innerHTML) {
@@ -43,6 +49,21 @@ function changeConnection(event) {
   } else {
     socket.close();
   }
+}
+
+function sizeCanvas() {
+  const padding = 50;
+  const width =
+    window.innerWidth ||
+    document.documentElement.clientWidth ||
+    document.body.clientWidth;
+  const height =
+    window.innerHeight ||
+    document.documentElement.clientHeight ||
+    document.body.clientHeight;
+
+  c.width = width - padding;
+  c.height = height - padding;
 }
 
 function openConnection() {
